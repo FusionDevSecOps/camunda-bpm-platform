@@ -23,7 +23,35 @@
 
   <properties>
     <license.includeTransitiveDependencies>false</license.includeTransitiveDependencies>
+
+
+    <jacoco.dataFile>${project.build.directory}/jacoco.exec</jacoco.dataFile>
+    <jacoco.reporting.outputDirectory>${project.build.directory}/jacoco-report</jacoco.reporting.outputDirectory>
+
+    <sonar.language>java</sonar.language>
+    <!--        <sonar.host.url>http://172.17.211.137</sonar.host.url>-->
+    <sonar.sources>src/main</sonar.sources>
+    <sonar.tests>src/test</sonar.tests>
+    <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+    <sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
+
   </properties>
+
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>3.12.0</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <version>2.3</version>
+      </plugin>
+    </plugins>
+  </reporting>
 
   <build>
     <plugins>
@@ -35,6 +63,68 @@
           <acceptPomPackaging>true</acceptPomPackaging>
           <excludedScopes>test</excludedScopes>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.18.1</version>
+        <configuration>
+          <useSystemClassLoader>false</useSystemClassLoader>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.8.2</version>
+        <configuration>
+          <!--                    <destFile>${sonar.jacoco.reportPath}</destFile>-->
+          <!--                    <destFile>${project.build.directory}/reports/jacoco</destFile>-->
+          <outputDirectory>target/jacoco-report</outputDirectory>
+          <append>true</append>
+        </configuration>
+        <executions>
+          <execution>
+
+            <goals>
+              <goal>prepare-agent</goal>
+
+            </goals>
+          </execution>
+          <!--                    &lt;!&ndash; attached to Maven test phase &ndash;&gt;-->
+          <execution>
+            <id>report</id>
+            <phase>test</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- PMD report -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>3.4</version>
+        <configuration>
+
+          <sourceEncoding>utf-8</sourceEncoding>
+          <minimumTokens>10</minimumTokens>
+
+
+          <skipEmptyReport>false</skipEmptyReport>
+
+          <failOnViolation>false</failOnViolation> <!-- this is actually true by default, but can be disabled -->
+          <printFailingErrors>true</printFailingErrors>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+              <goal>cpd-check</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
